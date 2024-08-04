@@ -16,14 +16,55 @@ module.exports = () => {
     output: {
       filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
+      publicPath: '',
     },
     plugins: [
-      
+      new HtmlWebpackPlugin({
+        template: './index.html',
+        title: 'J.A.T.E'
+      }),
+      new InjectManifest({
+        swSrc: './src-sw.js',
+        swDest: 'src-sw.js',
+      }),
+      new WebpackPwaManifest({
+        filename: "manifest.json",
+        short_name: "jate",
+        name: "jatepwa",
+        // crossorigin: 'use-credentials',
+        icons: [
+          {
+            src: path.resolve('src/images/logo.png'),
+            sizes: [96],
+            destination: 'icons'
+          }
+        ],
+        orientation: "portrait",
+        start_url: ".",
+        display: "standalone",
+        description: "another progressive web app!",
+        background_color: "#7eb4e2",
+        theme_color: "#7eb4e2",
+        fingerprints: false
+      }),
     ],
-
     module: {
       rules: [
-        
+        {
+          test: /\.css$/i,
+          use: ['style-loader', 'css-loader'],
+        },
+        {
+          test: /\.m?js$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env'],
+              plugins: ['@babel/plugin-proposal-object-rest-spread', '@babel/transform-runtime'],
+            },
+          },
+        },
       ],
     },
   };
